@@ -9,8 +9,8 @@ import org.junit.runner.RunWith;
         //features = ".//Features/MyTest.feature",
         features = "/Users/tatiana/myCourseProjectOnCucumber/src/test/resources/Features/MyTest.feature",
         glue = "stepDefinitions",
-        dryRun = false,
+        //dryRun = false,
         monochrome = true,
-        plugin = {"pretty", "html:test-output"})
+        plugin = {"pretty"})
 public class Runner {
 }

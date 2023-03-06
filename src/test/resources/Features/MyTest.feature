@@ -27,15 +27,15 @@ Feature: Desktop Checkout for Guest User
     And I am redirected to a "https://www.bookdepository.com/basket"
     And Basket order summary is as following:
       | Delivery cost | FREE    |
-      | Total         | 85,62 € |
+      | Total         | 85,26 € |
 
     And I click 'Checkout' button on 'Your basket' page
-    And I checkout as a new customer with email "test@user.com"
+    And I checkout as a new customer with email "test@user.com" and phone number "22323232323"
     And Checkout order summary is as following:
-      | Sub-total | 85,62 €  |
+      | Sub-total | 85,26 €  |
       | Delivery  | FREE     |
       | VAT       | 0,00 €   |
-      | Total     |  85,62 € |
+      | Total     |  85,26 € |
 
     And I fill "Full name" with "John Smith" and select "Delivery country" as "Bahamas" in delivery address information
     And I fill delivery address information manually:
@@ -45,10 +45,9 @@ Feature: Desktop Checkout for Guest User
       | County/State     | Random State     |
       | Postcode/ZIP     | 123              |
 
-    And I enter my card details
-      | Card number           | 4111111111111111 |
-      | EExpiry date (MM/YY)  | 09/23            |
+    And I enter my card details for Payment
+      | Credit Card Number    | 4111111111111111 |
+      | Expiration Date       | 04/23            |
       | CVV                   | 123              |
-    And 'Payment' section is disabled for editing
-    When I press 'Continue to payment' button on checkout
-    And 'Delivery Address' and 'Billing Address' sections are disabled for editing
+    When I click 'Buy now' button on 'Checkout' page
+    Then I see validation message "Something went wrong with your payment. Please contact your bank or try a different payment method" and close browser

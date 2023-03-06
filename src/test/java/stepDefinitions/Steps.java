@@ -118,15 +118,17 @@ public class Steps {
     @And("I click {string} button on {string} page")
     public void iClickCheckoutButtonOnBasketPage(String button, String page) {
         Assertions.assertTrue(driver.getTitle().contains(page));
-        WebElement checkoutButton = driver.findElement(By.xpath("//a[(text()='" + button + "')][1]"));
+        WebElement checkoutButton = driver.findElement(By.xpath("//*[(text()='" + button + "')][1]"));
         checkoutButton.click();
     }
 
-    @And("I checkout as a new customer with email {string}")
-    public void iCheckoutAsANewCustomerWithEmail(String email) {
-
+    @And("I checkout as a new customer with email {string} and phone number {string}")
+    public void iCheckoutAsANewCustomerWithEmailAndPhoneNumber(String email, String phoneNumber) {
         WebElement emailAddressField = driver.findElement(By.xpath("//input[@name='emailAddress']"));
         emailAddressField.sendKeys(email);
+
+        WebElement phoneNumberField = driver.findElement(By.xpath("//input[@name='delivery-telephone']"));
+        phoneNumberField.sendKeys(phoneNumber);
     }
 
     @And("Checkout order summary is as following:")
@@ -150,16 +152,15 @@ public class Steps {
 
         driver.findElement(By
                 .xpath("//label[text()='" + selectFieldLabel + "']/following::ul/li/a[text()='Bahamas']")).click();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
     }
 
     @And("I fill delivery address information manually:")
     public void iFillDeliveryAddressInformationManually(DataTable table) {
-        WebElement buttonEnterAddressManually = new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@id='delivery-manualEntryDeliveryAddress']")));
+        WebElement buttonEnterAddressManually = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@id='delivery-manualEntryDeliveryAddress']")));
         buttonEnterAddressManually.click();
 
         table.asLists().forEach((List item) -> {
-
 
             WebElement inputManually = driver.findElement(By
                     .xpath("//label[text()='" + item.get(0).toString() + "']/ancestor::div[@class='label-container']/following-sibling::div/input"));
@@ -168,25 +169,27 @@ public class Steps {
         });
     }
 
-    @And("{string} section is disabled for editing")
-    public void paymentSectionIsDisabledForEditing() {
+    @And("I enter my card details for Payment")
+    public void iEnterMyCardDetailsForPayment(DataTable table) {
+        table.asLists().forEach((List item) -> {
+            WebElement iFrame = driver.findElement(By.xpath("//iframe[contains(@title, '" + item.get(0).toString() + "')]"));
+            driver.switchTo().frame(iFrame);
+
+            WebElement detailsForPayment = driver.findElement(By
+                    .xpath("//label[text()='" + item.get(0).toString() + "']/following-sibling::input[1]"));
+
+            detailsForPayment.sendKeys(item.get(1).toString());
+
+            driver.switchTo().defaultContent();
+        });
     }
 
-    @When("I press {string} button on checkout")
-    public void iPressContinueToPaymentButtonOnCheckout() {
+    @Then("I see validation message {string} and close browser")
+    public void iSeeValidationMessageAndCloseBrowser(String message) {
+        WebElement validationMessage = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='buynow-error-msg']")));
+
+        Assertions.assertEquals(validationMessage.getText(), message);
+        driver.quit();
     }
-
-    @And("{string} and {string} sections are disabled for editing")
-    public void deliveryAddressAndBillingAddressSectionsAreDisabledForEditing() {
-    }
-
-    @And("I enter my card details")
-    public void iEnterMyCardDetails() {
-    }
-
-
-//    @Then("I should be told {string}")
-//    public void i_should_be_told(String expectedAnswer) {
-//        assertEquals(expectedAnswer, actualAnswer);
-//    }
 }
